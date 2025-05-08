@@ -1,4 +1,5 @@
 import { PUBLIC_API_URL } from '$env/static/public';
+import type { Product } from '$lib/states/product.svelte';
 
 interface CustomFetchOptions extends Omit<RequestInit, 'body'> {
 	body?: Partial<Record<string, any>>;
@@ -47,6 +48,20 @@ export interface APIErrorResponse {
 	notifications?: string | null;
 }
 
+export interface APIResponse<T> extends APIErrorResponse {
+	data: T;
+}
+
+export interface APIResponseWithPageControl<T> extends APIResponse<T> {
+	pageSize: number;
+	maxPageSize: number;
+	currentPage: number;
+	totalPages: number;
+	totalItens: number;
+}
+
 export interface APIAuthorizationResponse extends APIErrorResponse {
 	token: string;
 }
+
+export interface APIProductResponse extends APIResponseWithPageControl<Product[]> {}
