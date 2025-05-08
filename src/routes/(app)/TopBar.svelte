@@ -6,6 +6,7 @@
 	import DropdownToggle from '$lib/components/ui/DropdownToggle.svelte';
 	import UpdateMonitoring from '$lib/components/ui/UpdateMonitoring.svelte';
 	import type { AuthenticatedUser } from '$lib/interfaces';
+	import { getCart, toggleCartSidebar } from '$lib/states/cart.svelte';
 	import { toggleMainNavigation } from '$lib/states/mainNavigation.svelte';
 
 	let { auth }: { auth?: AuthenticatedUser | null } = $props();
@@ -71,6 +72,7 @@
 				<button
 					type="button"
 					class="group -m-2.5 flex items-center p-2.5 text-zinc-400 hover:text-zinc-500"
+					onclick={toggleCartSidebar}
 				>
 					<span class="sr-only">Visualizar itens no carrinho</span>
 
@@ -89,7 +91,9 @@
 						/>
 					</svg>
 
-					<span class="ml-2 text-sm font-medium text-zinc-700 group-hover:text-zinc-800">0</span>
+					<span class="ml-2 text-sm font-medium text-zinc-700 group-hover:text-zinc-800"
+						>{getCart().length}</span
+					>
 				</button>
 
 				<div class="hidden lg:block lg:h-6 lg:w-[1px] lg:bg-zinc-200"></div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { addItem } from '$lib/db/indexedDb';
+	import { insertCartItem } from '$lib/states/cart.svelte';
 	import type { Product } from '$lib/states/product.svelte';
 
 	let { product }: { product: Product } = $props();
@@ -104,6 +106,15 @@
 					class="-my-1 -mr-1 inline-flex size-10 items-center justify-center rounded-xl text-sm hover:bg-zinc-950 hover:text-white active:bg-zinc-950 active:text-white"
 					onclick={async () => {
 						if (amount > 0) {
+							await addItem(
+								'cart',
+								insertCartItem({
+									idProduto: product.idProduto,
+									unidade: product.unidade,
+									amount
+								})
+							);
+
 							amount = 0;
 						}
 					}}

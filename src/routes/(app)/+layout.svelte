@@ -1,8 +1,15 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import MainNavigation from './MainNavigation.svelte';
 	import TopBar from './TopBar.svelte';
+	import { loadCart } from '$lib/states/cart.svelte';
+	import CartSidebar from './CartSidebar.svelte';
 
 	let { children, data } = $props();
+
+	onMount(async () => {
+		await loadCart();
+	});
 </script>
 
 <MainNavigation />
@@ -14,3 +21,5 @@
 		{@render children()}
 	</div>
 </div>
+
+<CartSidebar />

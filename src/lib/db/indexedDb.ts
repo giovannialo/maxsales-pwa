@@ -1,3 +1,4 @@
+import type { Cart } from '$lib/states/cart.svelte';
 import type { Product } from '$lib/states/product.svelte';
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 
@@ -5,6 +6,14 @@ interface MyDB extends DBSchema {
 	products: {
 		key: number;
 		value: Product & { insertionOrder?: number };
+		indexes: {
+			insertionOrderIndex: number;
+		};
+	};
+
+	cart: {
+		key: number;
+		value: Cart & { insertionOrder?: number };
 		indexes: {
 			insertionOrderIndex: number;
 		};
@@ -20,10 +29,15 @@ let dbPromise: Promise<IDBPDatabase<MyDB>> | null = null;
 
 function initDB() {
 	if (!dbPromise) {
-		dbPromise = openDB<MyDB>('maxsales-database', 1, {
+		dbPromise = openDB<MyDB>('maxsales-database', 2, {
 			upgrade(db) {
 				if (!db.objectStoreNames.contains('products')) {
 					const store = db.createObjectStore('products', { keyPath: 'idProduto' });
+					store.createIndex('insertionOrderIndex', 'insertionOrder');
+				}
+
+				if (!db.objectStoreNames.contains('cart')) {
+					const store = db.createObjectStore('cart', { keyPath: 'idProduto' });
 					store.createIndex('insertionOrderIndex', 'insertionOrder');
 				}
 
