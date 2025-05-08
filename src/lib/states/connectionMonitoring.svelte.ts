@@ -1,22 +1,28 @@
 let deviceConnectionStatus: 'checking' | 'online' | 'offline' = $state('checking');
+const serverConnectionCheckTimeout = 2000;
 
 export function getDeviceConnectionStatus() {
 	return deviceConnectionStatus;
 }
 
-async function verifyConnectionWithServer() {
+async function verifyConnectionWithServer(): Promise<boolean> {
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), serverConnectionCheckTimeout);
+
 	try {
 		const response = await fetch('/ping.txt', {
 			cache: 'no-store',
-			method: 'HEAD'
+			method: 'HEAD',
+			signal: controller.signal
 		});
+		clearTimeout(timeoutId);
 		return response.ok;
-	} catch {
+	} catch (error) {
 		return false;
 	}
 }
 
-async function startConnectionRetryLoop() {
+async function startConnectionRetryLoop(): Promise<void> {
 	const interval = setInterval(async () => {
 		if (navigator.onLine) {
 			const isConnected = await verifyConnectionWithServer();
@@ -33,7 +39,7 @@ async function startConnectionRetryLoop() {
 	}, 2000);
 }
 
-export async function connectionCheckTrigger() {
+export async function connectionCheckTrigger(): Promise<void> {
 	const isConnected = await verifyConnectionWithServer();
 
 	if (isConnected) {
@@ -44,7 +50,7 @@ export async function connectionCheckTrigger() {
 	}
 }
 
-export function initializeConnectionMonitoring() {
+export function initializeConnectionMonitoring(): () => void {
 	const evaluateAndUpdateStatus = async () => {
 		if (navigator.onLine) {
 			connectionCheckTrigger();
